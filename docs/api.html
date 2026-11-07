@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Documentation — Northwind BMS</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563EB;
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --border: #E2E8F0;
+      --ink: #0F172A;
+      --ink-muted: #64748B;
+    }
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    code, pre {
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .header-bar {
+      background: #0F172A;
+      color: #fff;
+      padding: 30px 0;
+      border-bottom: 3px solid var(--primary);
+    }
+    .tag-get { background: #E0F2FE; color: #0284C7; font-weight: 700; border-radius: 4px; padding: 3px 8px; font-size: 13px; }
+    .tag-post { background: #DCFCE7; color: #16A34A; font-weight: 700; border-radius: 4px; padding: 3px 8px; font-size: 13px; }
+    .tag-put { background: #FEF3C7; color: #D97706; font-weight: 700; border-radius: 4px; padding: 3px 8px; font-size: 13px; }
+    .tag-delete { background: #FEE2E2; color: #DC2626; font-weight: 700; border-radius: 4px; padding: 3px 8px; font-size: 13px; }
+    .endpoint-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .endpoint-header {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      background: #FAFAFA;
+      border-bottom: 1px solid var(--border);
+    }
+    .endpoint-body {
+      padding: 20px;
+    }
+    pre {
+      background: #1E293B;
+      color: #F8FAFC;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .badge-auth {
+      background: #F1F5F9;
+      color: #475569;
+      border: 1px solid #CBD5E1;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header-bar">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h2 class="fw-bold mb-1">📘 Northwind BMS — RESTful API Documentation</h2>
+        <p class="mb-0 text-secondary">
+          วิชาการพัฒนา Web Application (CPE PSRU) · สถาปัตยกรรม RESTful API ด้วย Pure PHP + PDO OOP + JWT
+        </p>
+      </div>
+      <div>
+        <a href="../index.html" class="btn btn-outline-light btn-sm me-2">🖥️ ไปยังระบบหลัก</a>
+        <a href="API_DOCUMENTATION.md" class="btn btn-primary btn-sm">📄 ดาวน์โหลด Markdown</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container my-4">
+  <div class="alert alert-info shadow-sm">
+    <strong>Base URL:</strong> <code>http://your-domain.com/northwind/api/</code> หรือ <code>http://localhost:8000/api/index.php?endpoint=</code><br>
+    <strong>Header สำหรับ Endpoint ที่มีการป้องกัน:</strong> <code>Authorization: Bearer &lt;jwt_token&gt;</code>
+  </div>
+
+  <!-- AUTHENTICATION -->
+  <h4 class="fw-bold mt-4 mb-3">🔐 1. Authentication & Security</h4>
+
+  <div class="endpoint-card">
+    <div class="endpoint-header">
+      <div class="d-flex align-items-center gap-2">
+        <span class="tag-post">POST</span>
+        <strong class="font-monospace">/api/auth/login</strong>
+        <span class="text-muted ms-2">— เข้าสู่ระบบและรับ JWT Token</span>
+      </div>
+    </div>
+    <div class="endpoint-body">
+      <h6>Request Headers:</h6>
+      <code>Content-Type: application/json</code>
+      <h6 class="mt-3">Request Body:</h6>
+      <pre>{
+  "username": "admin@northwind.co.th",
+  "password": "admin"
+}</pre>
+      <h6>Response (200 OK):</h6>
+      <pre>{
+  "status": true,
+  "message": "เข้าสู่ระบบสำเร็จ",
+  "data": {
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+    "user": {
+      "id": 1,
+      "username": "admin",
+      "email": "admin@northwind.co.th",
+      "full_name": "วชิรา ล.",
+      "role": "ผู้ดูแลระบบ",
+      "avatar": "วช"
+    }
+  }
+}</pre>
+    </div>
+  </div>
+
+  <!-- PRODUCTS -->
+  <h4 class="fw-bold mt-4 mb-3">📦 2. Products Module</h4>
+
+  <div class="endpoint-card">
+    <div class="endpoint-header">
+      <div class="d-flex align-items-center gap-2">
+        <span class="tag-get">GET</span>
+        <strong class="font-monospace">/api/products</strong>
+        <span class="text-muted ms-2">— ดึงรายการสินค้าทั้งหมด พร้อมตัวกรองและแบ่งหน้า</span>
+      </div>
+    </div>
+    <div class="endpoint-body">
+      <h6>Query Parameters:</h6>
+      <ul>
+        <li><code>search</code> (string) - ค้นหาตามชื่อสินค้า</li>
+        <li><code>category_id</code> (int) - รหัสหมวดหมู่</li>
+        <li><code>supplier_id</code> (int) - รหัสผู้จัดจำหน่าย</li>
+        <li><code>status</code> (string) - in_stock, low_stock, out_of_stock, discontinued</li>
+        <li><code>page</code> (int) - หมายเลขหน้า (เริ่มต้น 1)</li>
+        <li><code>limit</code> (int) - จำนวนรายการต่อหน้า (เริ่มต้น 20)</li>
+      </ul>
+      <h6>Response (200 OK):</h6>
+      <pre>{
+  "status": true,
+  "message": "ดึงรายการสินค้าสำเร็จ",
+  "total": 20,
+  "page": 1,
+  "limit": 20,
+  "total_pages": 1,
+  "data": [
+    {
+      "product_id": 1,
+      "product_name": "ชาไทย Chai",
+      "category_id": 1,
+      "category_name": "เครื่องดื่ม",
+      "supplier_name": "Exotic Liquids",
+      "quantity_per_unit": "10 กล่อง x 20 ซอง",
+      "unit_price": 630.00,
+      "units_in_stock": 39,
+      "discontinued": 0
+    }
+  ]
+}</pre>
+    </div>
+  </div>
+
+  <div class="endpoint-card">
+    <div class="endpoint-header">
+      <div class="d-flex align-items-center gap-2">
+        <span class="tag-post">POST</span>
+        <strong class="font-monospace">/api/products</strong>
+        <span class="text-muted ms-2">— เพิ่มสินค้าใหม่</span>
+      </div>
+      <span class="badge badge-auth">Bearer Auth</span>
+    </div>
+    <div class="endpoint-body">
+      <h6>Request Body:</h6>
+      <pre>{
+  "product_name": "กาแฟดอยช้าง Organic",
+  "category_id": 1,
+  "supplier_id": 1,
+  "quantity_per_unit": "ถุงละ 250 กรัม",
+  "unit_price": 350.00,
+  "units_in_stock": 50,
+  "discontinued": 0
+}</pre>
+      <h6>Response (201 Created):</h6>
+      <pre>{
+  "status": true,
+  "message": "เพิ่มสินค้าเรียบร้อยแล้ว",
+  "data": {
+    "product_id": 21,
+    "product_name": "กาแฟดอยช้าง Organic",
+    "unit_price": 350.00
+  }
+}</pre>
+    </div>
+  </div>
+
+  <div class="endpoint-card">
+    <div class="endpoint-header">
+      <div class="d-flex align-items-center gap-2">
+        <span class="tag-put">PUT</span>
+        <strong class="font-monospace">/api/products/{id}</strong>
+        <span class="text-muted ms-2">— แก้ไขข้อมูลสินค้า</span>
+      </div>
+      <span class="badge badge-auth">Bearer Auth</span>
+    </div>
+    <div class="endpoint-body">
+      <h6>Response (200 OK):</h6>
+      <pre>{
+  "status": true,
+  "message": "แก้ไขข้อมูลสินค้าเรียบร้อยแล้ว",
+  "data": { ... }
+}</pre>
+    </div>
+  </div>
+
+  <div class="endpoint-card">
+    <div class="endpoint-header">
+      <div class="d-flex align-items-center gap-2">
+        <span class="tag-delete">DELETE</span>
+        <strong class="font-monospace">/api/products/{id}</strong>
+        <span class="text-muted ms-2">— ลบสินค้าตาม ID</span>
+      </div>
+      <span class="badge badge-auth">Bearer Auth</span>
+    </div>
+    <div class="endpoint-body">
+      <h6>Response (200 OK):</h6>
+      <pre>{
+  "status": true,
+  "message": "ลบสินค้าเรียบร้อยแล้ว"
+}</pre>
+    </div>
+  </div>
+
+  <!-- ORDERS -->
+  <h4 class="fw-bold mt-4 mb-3">🛒 3. Orders Module</h4>
+
+  <div class="endpoint-card">
+    <div class="endpoint-header">
+      <div class="d-flex align-items-center gap-2">
+        <span class="tag-get">GET</span>
+        <strong class="font-monospace">/api/orders</strong>
+        <span class="text-muted ms-2">— ดึงรายการคำสั่งซื้อ</span>
+      </div>
+    </div>
+    <div class="endpoint-body">
+      <h6>Query Parameters:</h6>
+      <code>?search=&status=&customer_id=&page=1&limit=20</code>
+      <h6>Response (200 OK):</h6>
+      <pre>{
+  "status": true,
+  "total": 12,
+  "data": [
+    {
+      "order_id": 10248,
+      "customer_id": "ALFKI",
+      "customer_name": "Alfreds Futterkiste",
+      "employee_name": "Steven Buchanan",
+      "order_date": "2024-07-04",
+      "shipper_name": "Federal Shipping",
+      "item_count": 3,
+      "total_amount": 16930.00,
+      "status": "จัดส่งแล้ว"
+    }
+  ]
+}</pre>
+    </div>
+  </div>
+
+  <div class="endpoint-card">
+    <div class="endpoint-header">
+      <div class="d-flex align-items-center gap-2">
+        <span class="tag-get">GET</span>
+        <strong class="font-monospace">/api/orders/{id}</strong>
+        <span class="text-muted ms-2">— ดูรายละเอียดคำสั่งซื้อและรายการสินค้า (Order Details)</span>
+      </div>
+    </div>
+    <div class="endpoint-body">
+      <h6>Response (200 OK):</h6>
+      <pre>{
+  "status": true,
+  "data": {
+    "order_id": 10248,
+    "customer_name": "Alfreds Futterkiste",
+    "contact_name": "Maria Anders",
+    "customer_phone": "030-0074321",
+    "order_date": "2024-07-04",
+    "status": "จัดส่งแล้ว",
+    "freight": 1120.00,
+    "subtotal": 15810.00,
+    "total_amount": 16930.00,
+    "items": [
+      {
+        "product_id": 11,
+        "product_name": "เค้กช็อกโกแลต Queso Cabrales",
+        "unit_price": 490.00,
+        "quantity": 12,
+        "discount": 0.00,
+        "subtotal": 5880.00
+      }
+    ]
+  }
+}</pre>
+    </div>
+  </div>
+
+  <!-- DASHBOARD & REPORTS -->
+  <h4 class="fw-bold mt-4 mb-3">📈 4. Dashboard & Reports Module</h4>
+
+  <div class="endpoint-card">
+    <div class="endpoint-header">
+      <div class="d-flex align-items-center gap-2">
+        <span class="tag-get">GET</span>
+        <strong class="font-monospace">/api/dashboard</strong>
+        <span class="text-muted ms-2">— ข้อมูลสรุปแดชบอร์ด, KPI Cards, กราฟยอดขายรายเดือน</span>
+      </div>
+    </div>
+    <div class="endpoint-body">
+      <h6>Response (200 OK):</h6>
+      <pre>{
+  "status": true,
+  "data": {
+    "kpis": {
+      "revenue": 424968.25,
+      "orders": 12,
+      "products": 18,
+      "customers": 13
+    },
+    "monthly_sales": [
+      { "month": "01", "name": "ม.ค.", "total": 28400.00 },
+      ...
+    ],
+    "top_products": [ ... ]
+  }
+}</pre>
+    </div>
+  </div>
+
+  <!-- OTHER MODULES -->
+  <h4 class="fw-bold mt-4 mb-3">🗂 5. Other CRUD Modules</h4>
+  <p class="text-muted">
+    ทุกโมดูลต่อไปนี้รองรับ HTTP Methods: <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code>:
+  </p>
+  <ul>
+    <li><code>/api/categories</code> — จัดการหมวดหมู่สินค้า (CRUD)</li>
+    <li><code>/api/customers</code> — จัดการข้อมูลลูกค้า (CRUD)</li>
+    <li><code>/api/suppliers</code> — จัดการผู้จัดจำหน่าย (CRUD)</li>
+    <li><code>/api/employees</code> — จัดการรายชื่อพนักงาน (CRUD)</li>
+    <li><code>/api/shippers</code> — จัดการบริษัทขนส่ง (CRUD)</li>
+    <li><code>/api/reports/dashboard</code> — รายงานสถิติและข้อมูลสำหรับ Export</li>
+  </ul>
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Northwind BMS — ระบบจัดการธุรกิจ</title>
+  <!-- Google Fonts: Sarabun & IBM Plex Mono -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom Design Tokens & Styles -->
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- SCREEN SWITCHER (For Testing & Prototype Mode)     -->
+<!-- ══════════════════════════════════════════════════ -->
+<div id="nav-tabs-bar">
+  <button class="nav-tab-pill" data-screen="login" onclick="show('login')">🔐 เข้าสู่ระบบ</button>
+  <button class="nav-tab-pill active" data-screen="dashboard" onclick="show('dashboard')">📊 แดชบอร์ด</button>
+  <button class="nav-tab-pill" data-screen="products" onclick="show('products')">📦 สินค้า</button>
+  <button class="nav-tab-pill" data-screen="product-form" onclick="show('product-form')">➕ เพิ่ม/แก้ไขสินค้า</button>
+  <button class="nav-tab-pill" data-screen="categories" onclick="show('categories')">🗂 หมวดหมู่</button>
+  <button class="nav-tab-pill" data-screen="orders" onclick="show('orders')">🛒 คำสั่งซื้อ</button>
+  <button class="nav-tab-pill" data-screen="order-detail" onclick="show('order-detail')">🧾 รายละเอียดคำสั่งซื้อ</button>
+  <button class="nav-tab-pill" data-screen="customers" onclick="show('customers')">👥 ลูกค้า</button>
+  <button class="nav-tab-pill" data-screen="suppliers" onclick="show('suppliers')">🏭 ผู้จัดจำหน่าย</button>
+  <button class="nav-tab-pill" data-screen="employees" onclick="show('employees')">👤 พนักงาน</button>
+  <button class="nav-tab-pill" data-screen="shippers" onclick="show('shippers')">🚚 บริษัทขนส่ง</button>
+  <button class="nav-tab-pill" data-screen="reports" onclick="show('reports')">📈 รายงาน</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- SCREEN 1: LOGIN                                   -->
+<!-- ══════════════════════════════════════════════════ -->
+<div id="login" class="screen">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="logo-mark" style="width:44px;height:44px;font-size:18px;border-radius:12px">NW</div>
+        <div>
+          <div style="font-size:20px;font-weight:700;color:var(--ink)">Northwind BMS</div>
+          <div style="font-size:12px;color:var(--ink-3)">ระบบจัดการธุรกิจ · CPE PSRU</div>
+        </div>
+      </div>
+      <div style="margin-bottom:20px">
+        <div style="font-size:18px;font-weight:700;color:var(--ink)">ยินดีต้อนรับ 👋</div>
+        <div style="font-size:13px;color:var(--ink-2);margin-top:2px;">กรุณาเข้าสู่ระบบเพื่อดำเนินการต่อ</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label required">อีเมล / ชื่อผู้ใช้</label>
+        <input id="login-username" class="form-input" value="admin@northwind.co.th" placeholder="admin@northwind.co.th">
+      </div>
+      <div class="form-group">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <label class="form-label required mb-0">รหัสผ่าน</label>
+          <span class="text-muted" style="font-size:12px;">(รหัสผ่าน: admin)</span>
+        </div>
+        <input id="login-password" class="form-input" type="password" value="admin" placeholder="••••••••">
+      </div>
+      <button id="login-btn" class="btn-nw btn-nw-primary w-100 justify-content-center py-2 mt-2">
+        🔐 เข้าสู่ระบบ
+      </button>
+      <div class="login-footer">
+        <span>🔒</span>
+        <span>ระบบความปลอดภัย RESTful JWT Token · อายุ 24 ชั่วโมง</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- MAIN APP SHELL (Screens 2 - 12)                    -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="shell">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">NW</div>
+      <div>
+        <div class="logo-text">Northwind BMS</div>
+        <div class="logo-sub">ระบบจัดการธุรกิจ</div>
+      </div>
+    </div>
+    <div class="nav">
+      <div class="nav-group">
+        <div class="nav-label">หน้าหลัก</div>
+        <button class="nav-item active" data-screen="dashboard" onclick="show('dashboard')">
+          <span class="nav-icon">📊</span> แดชบอร์ด
+        </button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">คลังสินค้า</div>
+        <button class="nav-item" data-screen="products" onclick="show('products')">
+          <span class="nav-icon">📦</span> สินค้า
+        </button>
+        <button class="nav-item" data-screen="categories" onclick="show('categories')">
+          <span class="nav-icon">🗂</span> หมวดหมู่สินค้า
+        </button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">การขาย</div>
+        <button class="nav-item" data-screen="orders" onclick="show('orders')">
+          <span class="nav-icon">🛒</span> คำสั่งซื้อ
+        </button>
+        <button class="nav-item" data-screen="customers" onclick="show('customers')">
+          <span class="nav-icon">👥</span> ลูกค้า
+        </button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">ห่วงโซ่อุปทาน</div>
+        <button class="nav-item" data-screen="suppliers" onclick="show('suppliers')">
+          <span class="nav-icon">🏭</span> ผู้จัดจำหน่าย
+        </button>
+        <button class="nav-item" data-screen="shippers" onclick="show('shippers')">
+          <span class="nav-icon">🚚</span> บริษัทขนส่ง
+        </button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">บุคลากร</div>
+        <button class="nav-item" data-screen="employees" onclick="show('employees')">
+          <span class="nav-icon">👤</span> พนักงาน
+        </button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">วิเคราะห์ & เอกสาร</div>
+        <button class="nav-item" data-screen="reports" onclick="show('reports')">
+          <span class="nav-icon">📈</span> รายงานสรุป
+        </button>
+        <a class="nav-item" href="docs/api.html" target="_blank">
+          <span class="nav-icon">📘</span> API Documentation
+        </a>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="avatar js-user-avatar">วช</div>
+        <div style="flex:1;min-width:0;">
+          <div class="user-name js-user-name">วชิรา ล.</div>
+          <div class="user-role js-user-role">ผู้ดูแลระบบ</div>
+        </div>
+        <button class="btn-nw btn-nw-outline btn-nw-sm" onclick="API.logout()" title="ออกจากระบบ">🚪</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN AREA -->
+  <div class="main">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="breadcrumb-wrap">
+        <span>หน้าหลัก</span>
+        <span class="sep">›</span>
+        <span class="cur js-cur-breadcrumb">แดชบอร์ด</span>
+      </div>
+      <div class="topbar-right">
+        <a href="docs/api.html" target="_blank" class="btn-nw btn-nw-outline btn-nw-sm">
+          📘 API Docs
+        </a>
+        <button class="icon-btn" onclick="App.toggleTheme()" title="สลับโหมดมืด/สว่าง">
+          🌓
+        </button>
+      </div>
+    </header>
+
+    <!-- PAGE CONTAINER -->
+    <main class="page-content">
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- SCREEN 2: DASHBOARD                               -->
+      <!-- ══════════════════════════════════════════════════ -->
+      <section id="dashboard" class="screen active">
+        <div class="page-header">
+          <div>
+            <div class="page-title">แดชบอร์ดภาพรวม</div>
+            <div class="page-desc">Northwind Business Management System (Real-time Analytics)</div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-nw btn-nw-outline" onclick="App.loadDashboard()">🔄 รีเฟรช</button>
+            <button class="btn-nw btn-nw-primary" onclick="show('orders')">🛒 ดูออเดอร์ทั้งหมด</button>
+          </div>
+        </div>
+
+        <!-- KPI Grid -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div>
+              <div class="kpi-label">ยอดขายรวม</div>
+              <div id="dash-revenue" class="kpi-value">฿0.00</div>
+              <div class="kpi-trend up">▲ +12.5% จากเดือนก่อน</div>
+            </div>
+            <div class="kpi-icon" style="background:#DCFCE7;color:#16A34A">💰</div>
+          </div>
+          <div class="kpi-card">
+            <div>
+              <div class="kpi-label">คำสั่งซื้อทั้งหมด</div>
+              <div id="dash-orders" class="kpi-value">0</div>
+              <div class="kpi-trend up">▲ +8.2% คำสั่งซื้อใหม่</div>
+            </div>
+            <div class="kpi-icon" style="background:#DBEAFE;color:#2563EB">🛒</div>
+          </div>
+          <div class="kpi-card">
+            <div>
+              <div class="kpi-label">สินค้าพร้อมขาย</div>
+              <div id="dash-products" class="kpi-value">0</div>
+              <div class="kpi-trend up">● สต็อกพร้อมส่ง</div>
+            </div>
+            <div class="kpi-icon" style="background:#FEF3C7;color:#D97706">📦</div>
+          </div>
+          <div class="kpi-card">
+            <div>
+              <div class="kpi-label">ลูกค้าทั้งหมด</div>
+              <div id="dash-customers" class="kpi-value">0</div>
+              <div class="kpi-trend up">▲ +3 รายใหม่</div>
+            </div>
+            <div class="kpi-icon" style="background:#F3E8FF;color:#7C3AED">👥</div>
+          </div>
+        </div>
+
+        <!-- Charts & Top Products -->
+        <div class="card-grid-2">
+          <div class="nw-card">
+            <div class="card-title">
+              <span>📊 สถิติยอดขายรายเดือน (2024)</span>
+              <span class="badge-nw badge-blue">หน่วย: บาท</span>
+            </div>
+            <div id="dash-monthly-chart" class="chart-container">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <div class="nw-card">
+            <div class="card-title">
+              <span>🏆 สินค้าขายดีสูงสุด (Top 5)</span>
+            </div>
+            <div id="dash-top-products">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Orders Table -->
+        <div class="nw-card">
+          <div class="card-title">
+            <span>🛒 คำสั่งซื้อล่าสุด</span>
+            <button class="btn-nw btn-nw-outline btn-nw-sm" onclick="show('orders')">ดูทั้งหมด ›</button>
+          </div>
+          <div class="table-wrap">
+            <table class="nw-table">
+              <thead>
+                <tr>
+                  <th>เลขที่คำสั่งซื้อ</th>
+                  <th>ลูกค้า</th>
+                  <th>พนักงานขาย</th>
+                  <th>วันที่สั่ง</th>
+                  <th>บริษัทขนส่ง</th>
+                  <th>สถานะ</th>
+                </tr>
+              </thead>
+              <tbody id="dash-recent-orders">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- SCREEN 3: PRODUCTS LIST                            -->
+      <!-- ══════════════════════════════════════════════════ -->
+      <section id="products" class="screen">
+        <div class="page-header">
+          <div>
+            <div class="page-title">รายการสินค้าทั้งหมด</div>
+            <div class="page-desc">
+              จัดการสินค้า ค้นหา และตรวจสอบสถานะสต็อก (<span id="products-count-badge">0 รายการ</span>)
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-nw btn-nw-outline" onclick="App.exportReportCSV('products')">📥 ส่งออก CSV</button>
+            <button class="btn-nw btn-nw-primary" onclick="App.openAddProduct()">➕ เพิ่มสินค้าใหม่</button>
+          </div>
+        </div>
+
+        <div class="nw-card">
+          <!-- Filters -->
+          <div class="filter-bar">
+            <input id="products-search-input" class="filter-input" placeholder="🔍 ค้นหาชื่อสินค้า...">
+            <select id="products-cat-filter" class="filter-select js-category-select">
+              <option value="">ทุกหมวดหมู่</option>
+            </select>
+            <select id="products-status-filter" class="filter-select">
+              <option value="">ทุกสถานะ</option>
+              <option value="in_stock">พร้อมจำหน่าย</option>
+              <option value="low_stock">สต็อกต่ำ</option>
+              <option value="out_of_stock">สินค้าหมด</option>
+              <option value="discontinued">เลิกจำหน่าย</option>
+            </select>
+            <button class="btn-nw btn-nw-outline btn-nw-sm" onclick="App.loadProducts()">กรองข้อมูล</button>
+          </div>
+
+          <!-- Table -->
+          <div class="table-wrap">
+            <table class="nw-table">
+              <thead>
+                <tr>
+                  <th>รหัส</th>
+                  <th>ชื่อสินค้า</th>
+                  <th>หมวดหมู่</th>
+                  <th>ผู้จัดจำหน่าย</th>
+                  <th>หน่วยบรรจุ</th>
+                  <th>ราคา (บาท)</th>
+                  <th>สถานะ</th>
+                  <th>จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="products-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div id="products-pagination" class="pagination-wrap"></div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- SCREEN 4: PRODUCT FORM (Add / Edit)                -->
+      <!-- ══════════════════════════════════════════════════ -->
+      <section id="product-form" class="screen">
+        <div class="page-header">
+          <div>
+            <div id="pf-title" class="page-title">เพิ่มสินค้าใหม่</div>
+            <div class="page-desc">บันทึกข้อมูลสินค้าเข้าสู่ระบบ Northwind BMS</div>
+          </div>
+          <button class="btn-nw btn-nw-outline" onclick="show('products')">‹ กลับไปยังรายการสินค้า</button>
+        </div>
+
+        <div class="nw-card" style="max-width:800px;">
+          <form onsubmit="App.saveProduct(event)">
+            <input type="hidden" id="pf-id">
+
+            <div class="row g-3">
+              <div class="col-md-12">
+                <label class="form-label required">ชื่อสินค้า</label>
+                <input id="pf-name" class="form-input" placeholder="เช่น กาแฟดอยช้าง ออร์แกนิก" required>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label required">หมวดหมู่สินค้า</label>
+                <select id="pf-category" class="form-input js-category-select" required>
+                  <option value="">-- เลือกหมวดหมู่ --</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label required">ผู้จัดจำหน่าย</label>
+                <select id="pf-supplier" class="form-input js-supplier-select" required>
+                  <option value="">-- เลือกผู้จัดจำหน่าย --</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">หน่วยบรรจุภัณฑ์</label>
+                <input id="pf-package" class="form-input" placeholder="เช่น 24 ขวด - 500 มล. หรือ 10 กล่อง">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label required">ราคาต่อหน่วย (บาท)</label>
+                <input id="pf-price" class="form-input" type="number" step="0.01" min="0" placeholder="0.00" required>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label required">จำนวนสต็อกเริ่มต้น</label>
+                <input id="pf-stock" class="form-input" type="number" min="0" value="10" required>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label required">สถานะสินค้า</label>
+                <select id="pf-discontinued" class="form-input">
+                  <option value="0">พร้อมจำหน่าย (Active)</option>
+                  <option value="1">เลิกจำหน่าย (Discontinued)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+              <button type="button" class="btn-nw btn-nw-outline" onclick="show('products')">ยกเลิก</button>
+              <button type="submit" class="btn-nw btn-nw-primary">💾 บันทึกข้อมูลสินค้า</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- SCREEN 5: CATEGORIES                               -->
+      <!-- ══════════════════════════════════════════════════ -->
+      <section id="categories" class="screen">
+        <div class="page-header">
+          <div>
+            <div class="page-title">หมวดหมู่สินค้า</div>
+            <div id="categories-count" class="page-desc">0 หมวดหมู่</div>
+          </div>
+          <button class="btn-nw btn-nw-primary" onclick="App.openAddCategory()">➕ เพิ่มหมวดหมู่</button>
+        </div>
+
+        <div id="categories-grid" class="card-grid-3">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- SCREEN 6: ORDERS LIST                              -->
+      <!-- ══════════════════════════════════════════════════ -->
+      <section id="orders" class="screen">
+        <div class="page-header">
+          <div>
+            <div class="page-title">รายการคำสั่งซื้อ</div>
+            <div class="page-desc">จัดการและตรวจสอบสถานะการจัดส่งออเดอร์ (<span id="orders-count-badge">0 รายการ</span>)</div>
+          </div>
+          <button class="btn-nw btn-nw-outline" onclick="App.exportReportCSV('orders')">📥 ส่งออก CSV</button>
+        </div>
+
+        <div class="nw-card">
+          <!-- Filter -->
+          <div class="filter-bar">
+            <input id="orders-search-input" class="filter-input" placeholder="🔍 ค้นหาเลขที่ หรือ ลูกค้า...">
+            <select id="orders-status-filter" class="filter-select">
+              <option value="">ทุกสถานะ</option>
+              <option value="จัดส่งแล้ว">จัดส่งแล้ว</option>
+              <option value="รอดำเนินการ">รอดำเนินการ</option>
+              <option value="กำลังเตรียมของ">กำลังเตรียมของ</option>
+            </select>
+          </div>
+
+          <!-- Table -->
+          <div class="table-wrap">
+            <table class="nw-table">
+              <thead>
+                <tr>
+                  <th>เลขที่</th>
+                  <th>ลูกค้า</th>
+                  <th>พนักงานขาย</th>
+                  <th>วันที่สั่ง</th>
+                  <th>บริษัทขนส่ง</th>
+                  <th>จำนวนรายการ</th>
+                  <th>สถานะ</th>
+                  <th>จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="orders-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+
+          <div id="orders-pagination" class="pagination-wrap"></div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- SCREEN 7: ORDER DETAILS                            -->
+      <!-- ══════════════════════════════════════════════════ -->
+      <section id="order-detail" class="screen">
+        <div class="page-header">
+          <div>
+            <div class="page-title">รายละเอียดคำสั่งซื้อ <span id="od-id" class="text-primary font-monospace">#10248</span></div>
+            <div class="page-desc">วันที่สั่งซื้อ: <span id="od-date">2024-07-04</span> · สถานะ: <span id="od-status"></span></div>
+          </div>
+          <button class="btn-nw btn-nw-outline" onclick="show('orders')">‹ กลับหน้ารายการสั่งซื้อ</button>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <div class="nw-card mb-0 h-100">
+              <div class="card-title">👤 ข้อมูลลูกค้าผู้สั่งซื้อ</div>
+              <table class="table table-sm table-borderless mb-0">
+                <tr><td class="text-muted" style="width:120px;">ชื่อบริษัท:</td><td><strong id="od-customer-name">-</strong></td></tr>
+                <tr><td class="text-muted">ผู้ติดต่อ:</td><td id="od-contact">-</td></tr>
+                <tr><td class="text-muted">ที่อยู่จัดส่ง:</td><td id="od-address">-</td></tr>
+              </table>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="nw-card mb-0 h-100">
+              <div class="card-title">🚚 ข้อมูลการจัดส่ง</div>
+              <table class="table table-sm table-borderless mb-0">
+                <tr><td class="text-muted" style="width:120px;">บริษัทขนส่ง:</td><td><strong id="od-shipper">-</strong></td></tr>
+                <tr><td class="text-muted">ค่าขนส่ง (Freight):</td><td id="od-freight" class="font-monospace">฿0.00</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="nw-card">
+          <div class="card-title">📦 รายการสินค้าในคำสั่งซื้อ</div>
+          <div class="table-wrap">
+            <table class="nw-table">
+              <thead>
+                <tr>
+                  <th>สินค้า</th>
+                  <th>จำนวน</th>
+                  <th>ราคาต่อหน่วย</th>
+                  <th>ยอดรวม</th>
+                </tr>
+              </thead>
+              <tbody id="od-items-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="d-flex justify-content-end mt-4">
+            <div style="min-width:250px;">
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted">ยอดรวมสินค้า:</span>
+                <strong id="od-subtotal" class="font-monospace">฿0.00</strong>
+              </div>
+              <div class="d-flex justify-content-between py-2">
+                <span class="fw-bold" style="font-size:16px;">ยอดชำระสุทธิ:</span>
+                <span id="od-total" class="fw-bold font-monospace text-primary" style="font-size:18px;">฿0.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- SCREEN 8: CUSTOMERS                                -->
+      <!-- ══════════════════════════════════════════════════ -->
+      <section id="customers" class="screen">
+        <div class="page-header">
+          <div>
+            <div class="page-title">ทะเบียนลูกค้า</div>
+            <div class="page-desc">จัดการข้อมูลลูกค้า (<span id="customers-count">0 ราย</span>)</div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-nw btn-nw-outline" onclick="App.exportReportCSV('customers')">📥 ส่งออก CSV</button>
+            <button class="btn-nw btn-nw-primary" onclick="App.openAddCustomer()">➕ เพิ่มลูกค้าใหม่</button>
+          </div>
+        </div>
+
+        <div class="nw-card">
+          <div class="filter-bar">
+            <input id="customers-search-input" class="filter-input" placeholder="🔍 ค้นหาลูกค้า, เมือง, ประเทศ...">
+          </div>
+          <div class="table-wrap">
+            <table class="nw-table">
+              <thead>
+                <tr>
+                  <th>รหัส</th>
+                  <th>ชื่อบริษัท</th>
+                  <th>ผู้ติดต่อ</th>
+                  <th>เมือง</th>
+                  <th>ประเทศ</th>
+                  <th>รหัสไปรษณีย์</th>
+                  <th>จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="customers-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- SCREEN 9: SUPPLIERS                                -->
+      <!-- ══════════════════════════════════════════════════ -->
+      <section id="suppliers" class="screen">
+        <div class="page-header">
+          <div>
+            <div class="page-title">ทะเบียนผู้จัดจำหน่าย</div>
+            <div class="page-desc">จัดการซัพพลายเออร์ (<span id="suppliers-count">0 ราย</span>)</div>
+          </div>
+          <button class="btn-nw btn-nw-primary" onclick="App.openAddSupplier()">➕ เพิ่มผู้จัดจำหน่าย</button>
+        </div>
+
+        <div class="nw-card">
+          <div class="filter-bar">
+            <input id="suppliers-search-input" class="filter-input" placeholder="🔍 ค้นหาผู้จัดจำหน่าย...">
+          </div>
+          <div class="table-wrap">
+            <table class="nw-table">
+              <thead>
+                <tr>
+                  <th>รหัส</th>
+                  <th>ชื่อบริษัท</th>
+                  <th>ผู้ติดต่อ</th>
+                  <th>เมือง</th>
+                  <th>ประเทศ</th>
+                  <th>เบอร์โทร</th>
+                  <th>สินค้า</th>
+                  <th>จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="suppliers-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- SCREEN 10: EMPLOYEES                               -->
+      <!-- ══════════════════════════════════════════════════ -->
+      <section id="employees" class="screen">
+        <div class="page-header">
+          <div>
+            <div class="page-title">รายชื่อพนักงาน</div>
+            <div class="page-desc">พนักงานในองค์กร (<span id="employees-count">0 คน</span>)</div>
+          </div>
+          <button class="btn-nw btn-nw-primary" onclick="App.openAddEmployee()">➕ เพิ่มพนักงาน</button>
+        </div>
+
+        <div id="employees-grid" class="emp-grid">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- SCREEN 11: SHIPPERS                                -->
+      <!-- ══════════════════════════════════════════════════ -->
+      <section id="shippers" class="screen">
+        <div class="page-header">
+          <div>
+            <div class="page-title">บริษัทขนส่ง</div>
+            <div class="page-desc">พันธมิตรจัดส่งสินค้า (<span id="shippers-count">0 บริษัท</span>)</div>
+          </div>
+          <button class="btn-nw btn-nw-primary" onclick="App.openAddShipper()">➕ เพิ่มบริษัทขนส่ง</button>
+        </div>
+
+        <div id="shippers-grid" class="card-grid-3">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- SCREEN 12: REPORTS & ANALYTICS                     -->
+      <!-- ══════════════════════════════════════════════════ -->
+      <section id="reports" class="screen">
+        <div class="page-header">
+          <div>
+            <div class="page-title">รายงานและสถิติภาพรวม</div>
+            <div class="page-desc">สรุปยอดขาย ประสิทธิภาพสินค้า และลูกค้าชั้นนำ</div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-nw btn-nw-outline" onclick="App.printReportPDF()">🖨️ พิมพ์รายงาน (PDF)</button>
+            <button class="btn-nw btn-nw-primary" onclick="App.exportReportCSV('products')">📥 ส่งออกรายงาน CSV</button>
+          </div>
+        </div>
+
+        <div class="card-grid-2">
+          <!-- Monthly Sales -->
+          <div class="nw-card">
+            <div class="card-title">
+              <span>📈 แนวโน้มยอดขายรายเดือน</span>
+              <span class="badge-nw badge-green">ข้อมูลสมบูรณ์</span>
+            </div>
+            <div id="reports-monthly-chart" class="chart-container">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Top Products -->
+          <div class="nw-card">
+            <div class="card-title">
+              <span>🏆 สินค้าสร้างยอดขายสูงสุด</span>
+            </div>
+            <div id="reports-top-products">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Customers Table -->
+        <div class="nw-card">
+          <div class="card-title">
+            <span>🥇 ลูกค้าที่มียอดสั่งซื้อสูงสุด (Top 5 Customers)</span>
+          </div>
+          <div class="table-wrap">
+            <table class="nw-table">
+              <thead>
+                <tr>
+                  <th>อันดับ</th>
+                  <th>ชื่อบริษัทลูกค้า</th>
+                  <th>ประเทศ</th>
+                  <th>จำนวนออเดอร์</th>
+                  <th>สัดส่วน</th>
+                </tr>
+              </thead>
+              <tbody id="reports-top-customers">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- BOOTSTRAP 5 MODALS FOR CRUD OPERATIONS            -->
+<!-- ══════════════════════════════════════════════════ -->
+
+<!-- Category Modal -->
+<div class="modal fade" id="modalCategory" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="modalCategoryTitle">จัดการหมวดหมู่สินค้า</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form onsubmit="App.submitCategoryModal(event)">
+        <div class="modal-body">
+          <input type="hidden" id="cat-modal-id">
+          <div class="mb-3">
+            <label class="form-label required">ชื่อหมวดหมู่</label>
+            <input type="text" id="cat-modal-name" class="form-input" placeholder="เช่น อาหารสำเร็จรูป" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">คำอธิบาย</label>
+            <textarea id="cat-modal-desc" class="form-input" rows="2" placeholder="คำอธิบายรายละเอียดของหมวดหมู่"></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">ไอคอน Emoji</label>
+            <input type="text" id="cat-modal-icon" class="form-input" value="📦" placeholder="เช่น 🍹, 🧀, 🥩">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-nw btn-nw-outline" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="submit" class="btn-nw btn-nw-primary">💾 บันทึกหมวดหมู่</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Customer Modal -->
+<div class="modal fade" id="modalCustomer" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="modalCustomerTitle">จัดการข้อมูลลูกค้า</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form onsubmit="App.submitCustomerModal(event)">
+        <div class="modal-body">
+          <div class="mb-3" id="cust-modal-id-wrap">
+            <label class="form-label required">รหัสลูกค้า (5 ตัวอักษร)</label>
+            <input type="text" id="cust-modal-id" class="form-input" maxlength="10" placeholder="เช่น THAIL" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label required">ชื่อบริษัท</label>
+            <input type="text" id="cust-modal-company" class="form-input" placeholder="เช่น Siam Trading Co., Ltd." required>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-md-6">
+              <label class="form-label">ชื่อผู้ติดต่อ</label>
+              <input type="text" id="cust-modal-contact" class="form-input" placeholder="เช่น สมชาย ใจดี">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">เบอร์โทรศัพท์</label>
+              <input type="text" id="cust-modal-phone" class="form-input" placeholder="02-123-4567">
+            </div>
+          </div>
+          <div class="row g-2">
+            <div class="col-md-6">
+              <label class="form-label">เมือง / จังหวัด</label>
+              <input type="text" id="cust-modal-city" class="form-input" placeholder="Bangkok">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">ประเทศ</label>
+              <input type="text" id="cust-modal-country" class="form-input" value="Thailand">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-nw btn-nw-outline" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="submit" class="btn-nw btn-nw-primary">💾 บันทึกข้อมูลลูกค้า</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Supplier Modal -->
+<div class="modal fade" id="modalSupplier" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="modalSupplierTitle">จัดการข้อมูลผู้จัดจำหน่าย</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form onsubmit="App.submitSupplierModal(event)">
+        <div class="modal-body">
+          <input type="hidden" id="sup-modal-id">
+          <div class="mb-3">
+            <label class="form-label required">ชื่อบริษัทผู้จัดจำหน่าย</label>
+            <input type="text" id="sup-modal-company" class="form-input" placeholder="เช่น Bangkok Gourmet Supplies" required>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-md-6">
+              <label class="form-label">ผู้ติดต่อ</label>
+              <input type="text" id="sup-modal-contact" class="form-input" placeholder="เช่น สุวิทย์ การค้า">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">เบอร์โทรศัพท์</label>
+              <input type="text" id="sup-modal-phone" class="form-input" placeholder="02-987-6543">
+            </div>
+          </div>
+          <div class="row g-2">
+            <div class="col-md-6">
+              <label class="form-label">เมือง</label>
+              <input type="text" id="sup-modal-city" class="form-input" placeholder="Bangkok">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">ประเทศ</label>
+              <input type="text" id="sup-modal-country" class="form-input" value="Thailand">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-nw btn-nw-outline" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="submit" class="btn-nw btn-nw-primary">💾 บันทึกผู้จัดจำหน่าย</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Employee Modal -->
+<div class="modal fade" id="modalEmployee" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="modalEmployeeTitle">จัดการข้อมูลพนักงาน</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form onsubmit="App.submitEmployeeModal(event)">
+        <div class="modal-body">
+          <input type="hidden" id="emp-modal-id">
+          <div class="row g-2 mb-3">
+            <div class="col-md-6">
+              <label class="form-label required">ชื่อจริง</label>
+              <input type="text" id="emp-modal-firstname" class="form-input" placeholder="ชื่อ" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label required">นามสกุล</label>
+              <input type="text" id="emp-modal-lastname" class="form-input" placeholder="นามสกุล" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label required">ตำแหน่งงาน</label>
+            <input type="text" id="emp-modal-title" class="form-input" placeholder="เช่น พนักงานขาย, ผู้จัดการฝ่ายจัดซื้อ" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">วันเดือนปีเกิด</label>
+            <input type="date" id="emp-modal-birthdate" class="form-input">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-nw btn-nw-outline" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="submit" class="btn-nw btn-nw-primary">💾 บันทึกข้อมูลพนักงาน</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Shipper Modal -->
+<div class="modal fade" id="modalShipper" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="modalShipperTitle">จัดการบริษัทขนส่ง</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form onsubmit="App.submitShipperModal(event)">
+        <div class="modal-body">
+          <input type="hidden" id="ship-modal-id">
+          <div class="mb-3">
+            <label class="form-label required">ชื่อบริษัทขนส่ง</label>
+            <input type="text" id="ship-modal-company" class="form-input" placeholder="เช่น Kerry Express, Flash Express" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">เบอร์โทรศัพท์</label>
+            <input type="text" id="ship-modal-phone" class="form-input" placeholder="(503) 555-1234">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">ไอคอน Emoji</label>
+            <input type="text" id="ship-modal-icon" class="form-input" value="🚚" placeholder="🚀, 🚢, 📦, 🚚">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-nw btn-nw-outline" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="submit" class="btn-nw btn-nw-primary">💾 บันทึกบริษัทขนส่ง</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
+

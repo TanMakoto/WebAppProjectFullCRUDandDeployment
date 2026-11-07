@@ -1,0 +1,429 @@
+{
+  "info": {
+    "_postman_id": "northwind-bms-api-psru",
+    "name": "Northwind BMS RESTful API",
+    "description": "Collection of RESTful API endpoints for Northwind Business Management System (CPE PSRU Web Application Project)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Auth",
+      "item": [
+        {
+          "name": "Login (Generate JWT)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.status && jsonData.data && jsonData.data.token) {",
+                  "    pm.collectionVariables.set('token', jsonData.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin@northwind.co.th\",\n  \"password\": \"admin\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/index.php?endpoint=auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["index.php"],
+              "query": [
+                {
+                  "key": "endpoint",
+                  "value": "auth/login"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Current User (Verify Token)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/index.php?endpoint=auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["index.php"],
+              "query": [
+                {
+                  "key": "endpoint",
+                  "value": "auth/me"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard Statistics & Charts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/index.php?endpoint=dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["index.php"],
+              "query": [
+                {
+                  "key": "endpoint",
+                  "value": "dashboard"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Products",
+      "item": [
+        {
+          "name": "Get Products (with filters)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/index.php?endpoint=products&page=1&limit=20&search=",
+              "host": ["{{baseUrl}}"],
+              "path": ["index.php"],
+              "query": [
+                { "key": "endpoint", "value": "products" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "search", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Product By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/index.php?endpoint=products/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["index.php"],
+              "query": [
+                { "key": "endpoint", "value": "products/1" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_name\": \"ชาเขียวมัทฉะ Organic\",\n  \"category_id\": 1,\n  \"supplier_id\": 1,\n  \"quantity_per_unit\": \"กล่องละ 50 ซอง\",\n  \"unit_price\": 450.00,\n  \"units_in_stock\": 30,\n  \"discontinued\": 0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/index.php?endpoint=products",
+              "host": ["{{baseUrl}}"],
+              "path": ["index.php"],
+              "query": [
+                { "key": "endpoint", "value": "products" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_name\": \"ชาไทยพรีเมียม Thai Tea\",\n  \"category_id\": 1,\n  \"supplier_id\": 1,\n  \"quantity_per_unit\": \"10 กล่อง x 20 ซอง\",\n  \"unit_price\": 650.00,\n  \"units_in_stock\": 45,\n  \"discontinued\": 0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/index.php?endpoint=products/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["index.php"],
+              "query": [
+                { "key": "endpoint", "value": "products/1" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/index.php?endpoint=products/20",
+              "host": ["{{baseUrl}}"],
+              "path": ["index.php"],
+              "query": [
+                { "key": "endpoint", "value": "products/20" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/index.php?endpoint=categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["index.php"],
+              "query": [
+                { "key": "endpoint", "value": "categories" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_name\": \"อาหารเพื่อสุขภาพ\",\n  \"description\": \"Clean food, salads, and healthy grains\",\n  \"icon\": \"🥑\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/index.php?endpoint=categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["index.php"],
+              "query": [
+                { "key": "endpoint", "value": "categories" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 Orders",
+      "item": [
+        {
+          "name": "Get Orders (List)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/index.php?endpoint=orders&page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["index.php"],
+              "query": [
+                { "key": "endpoint", "value": "orders" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Order Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/index.php?endpoint=orders/10248",
+              "host": ["{{baseUrl}}"],
+              "path": ["index.php"],
+              "query": [
+                { "key": "endpoint", "value": "orders/10248" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"จัดส่งแล้ว\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/index.php?endpoint=orders/10248/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["index.php"],
+              "query": [
+                { "key": "endpoint", "value": "orders/10248/status" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 Customers",
+      "item": [
+        {
+          "name": "Get Customers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/index.php?endpoint=customers",
+              "host": ["{{baseUrl}}"],
+              "path": ["index.php"],
+              "query": [
+                { "key": "endpoint", "value": "customers" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 Suppliers",
+      "item": [
+        {
+          "name": "Get Suppliers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/index.php?endpoint=suppliers",
+              "host": ["{{baseUrl}}"],
+              "path": ["index.php"],
+              "query": [
+                { "key": "endpoint", "value": "suppliers" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 Employees",
+      "item": [
+        {
+          "name": "Get Employees",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/index.php?endpoint=employees",
+              "host": ["{{baseUrl}}"],
+              "path": ["index.php"],
+              "query": [
+                { "key": "endpoint", "value": "employees" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 Shippers",
+      "item": [
+        {
+          "name": "Get Shippers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/index.php?endpoint=shippers",
+              "host": ["{{baseUrl}}"],
+              "path": ["index.php"],
+              "query": [
+                { "key": "endpoint", "value": "shippers" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 Reports & Export",
+      "item": [
+        {
+          "name": "Get Reports Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/index.php?endpoint=reports/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["index.php"],
+              "query": [
+                { "key": "endpoint", "value": "reports/dashboard" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Export Data (CSV / JSON)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/index.php?endpoint=reports/export&type=products",
+              "host": ["{{baseUrl}}"],
+              "path": ["index.php"],
+              "query": [
+                { "key": "endpoint", "value": "reports/export" },
+                { "key": "type", "value": "products" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+

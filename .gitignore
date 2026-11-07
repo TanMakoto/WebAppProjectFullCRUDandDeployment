@@ -1,0 +1,16 @@
+# Ignore archive submissions
+*.zip
+
+# Temporary & Scratch scripts
+scratch/
+.system_generated/
+inspect_*.js
+extract_*.js
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.vscode/
+.idea/
